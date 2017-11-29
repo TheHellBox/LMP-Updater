@@ -11,7 +11,7 @@ use std::fs;
 use std::path::Path;
 
 fn main() {
-    println!("LMP Updater v0.0.2.\nMade by The HellBox");
+    println!("LMP Updater v0.5.\nMade by The HellBox");
     if !std::path::Path::new("./config.cfg").exists(){
         config::create("./config.cfg");
     }
