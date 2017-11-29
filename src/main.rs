@@ -1,6 +1,8 @@
 extern crate curl;
 extern crate zip;
 
+mod config;
+
 use std::io::Write;
 use curl::easy::Easy;
 use std::fs::File;
@@ -10,15 +12,19 @@ use std::path::Path;
 
 fn main() {
     println!("LMP Updater v0.0.2.\nMade by The HellBox");
+    if !std::path::Path::new("./config.cfg").exists(){
+        config::create("./config.cfg");
+    }
+    let config = config::Config::new("./config.cfg");
     let args: Vec<_> = std::env::args().collect();
     let target: String =
     if args.len() < 2 {
-        "client".to_string()
+        config.get("default_target").to_owned()
     }
     else{
         args[1].clone()
     };
-    let repo = "http://127.0.0.1/LMP-releases/";
+    let repo = config.get("repo");
     let scr = format!("{}{}.zip", repo, target);
     let mut curl = Easy::new();
     let mut data = Vec::new();
@@ -35,10 +41,6 @@ fn main() {
         transfer.perform().unwrap();
     }
 
-    let mut file = File::create(&format!("./{}.zip", target)).unwrap();
-
-    let _ = file.write_all(&data);
-
     let mut archive = zip::ZipArchive::new(std::io::Cursor::new(data)).unwrap();
 
      for i in 0..archive.len() {
@@ -48,7 +50,7 @@ fn main() {
              fs::create_dir(zipfile.name());
          }
          else{
-             let mut newfile = File::create( &format!( "./{}", zipfile.name() ) ).unwrap();
+             let mut newfile = File::create( &format!( "{}{}",config.get("dir"), zipfile.name() ) ).unwrap();
              let mut buffer: Vec<u8> = vec![];
              let _ = zipfile.read_to_end(&mut buffer);
              let _ = newfile.write_all(&buffer);
