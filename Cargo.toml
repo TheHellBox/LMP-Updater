@@ -1,0 +1,8 @@
+[package]
+name = "LMP-updater"
+version = "0.1.0"
+authors = ["TheHellBox <hellboxstudio@yandex.ru>"]
+
+[dependencies]
+curl = "*"
+zip = "0.2"
