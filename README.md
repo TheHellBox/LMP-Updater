@@ -8,3 +8,11 @@ Updater for Luna Multiplayer Mod https://github.com/gavazquez/LunaMultiPlayer
 cargo build --release
 ```
 *Go to target/debug and move file LMP-updater (Or DMP-updater.exe) to server/client dir
+
+# How to use
+
+```
+./DMP-updater #Download client
+
+./DMP-updater <client/server/master_server> #download target
+```
