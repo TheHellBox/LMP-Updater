@@ -12,7 +12,7 @@ cargo build --release
 # How to use
 
 ```
-./DMP-updater #Download client
+./LMP-updater #Download client
 
-./DMP-updater <client/server/master_server> #download target
+./LMP-updater <client/server/master> #download target
 ```
