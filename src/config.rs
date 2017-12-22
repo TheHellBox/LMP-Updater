@@ -41,7 +41,7 @@ pub fn create(path: &'static str){
     use std::fs;
     use std::io::Write;
     let mut newfile = File::create( path ).unwrap();
-    let mut default = b"repo = http://127.0.0.1/LMP-releases/
+    let mut default = b"repo = http://lunamultiplayer.com/redirect?p=download&v=latest
 default_target = client
 dir = ./
 ".to_vec();

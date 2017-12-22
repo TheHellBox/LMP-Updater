@@ -11,7 +11,7 @@ use std::fs;
 use std::path::Path;
 
 fn main() {
-    println!("LMP Updater v0.5.\nMade by The HellBox");
+    println!("LMP Updater v0.7\nMade by The HellBox");
     if !std::path::Path::new("./config.cfg").exists(){
         config::create("./config.cfg");
     }
@@ -24,8 +24,7 @@ fn main() {
     else{
         args[1].clone()
     };
-    let repo = config.get("repo");
-    let scr = format!("{}{}.zip", repo, target);
+    let scr = config.get("repo");
     let mut curl = Easy::new();
     let mut data = Vec::new();
     let _ = curl.url(&scr).unwrap();
@@ -43,17 +42,29 @@ fn main() {
 
     let mut archive = zip::ZipArchive::new(std::io::Cursor::new(data)).unwrap();
 
-     for i in 0..archive.len() {
-         let mut zipfile = archive.by_index(i).unwrap();
-         println!("{}", zipfile.name());
-         if zipfile.name().ends_with("/") {
-             fs::create_dir(zipfile.name());
-         }
-         else{
-             let mut newfile = File::create( &format!( "{}{}",config.get("dir"), zipfile.name() ) ).unwrap();
-             let mut buffer: Vec<u8> = vec![];
-             let _ = zipfile.read_to_end(&mut buffer);
-             let _ = newfile.write_all(&buffer);
-         }
+    for i in 0..archive.len() {
+        let stringtest = "client".to_string();
+        let new_target = match target.as_ref(){
+            "client" => ("LMPClient/GameData/LunaMultiPlayer/", "LunaMultiPlayer"),
+            "server" => ("LMPServer/", "./"),
+            "master" => ("LMPMasterServer/", "./"),
+            _ => ("LMPClient/GameData/LunaMultiPlayer/", "LunaMultiPlayer"),
+        };
+        let (path, name) = new_target;
+        let mut zipfile = archive.by_index(i).unwrap();
+        if zipfile.name().starts_with(path){
+            let zipname = zipfile.name().replace(path, "");
+            let fullpath = &format!( "{}{}/{}",config.get("dir"), name, zipname);
+            if fullpath.ends_with("/") {
+                fs::create_dir_all(fullpath);
+            }
+            else{
+                fs::create_dir_all(Path::new(fullpath).parent().unwrap());
+                let mut newfile = File::create( fullpath ).unwrap();
+                let mut buffer: Vec<u8> = vec![];
+                let _ = zipfile.read_to_end(&mut buffer);
+                let _ = newfile.write_all(&buffer);
+            }
+        }
      }
 }
